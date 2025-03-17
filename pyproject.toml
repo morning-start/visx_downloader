@@ -1,0 +1,15 @@
+[project]
+name = "visx_downloader"
+version = "1.0.0"
+description = "a simple python script to download visx"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.32.3",
+    "tqdm>=4.67.1",
+]
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.12.0",
+]
