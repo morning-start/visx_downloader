@@ -75,8 +75,12 @@ def run(ext_id: str, version: str = None, destination: str = "./extensions"):
         publisher_name = ext_id.split(".")[0]
         extension_name = ext_id.split(".")[1]
         last_version = version
-
-    download_file(publisher_name, extension_name, last_version, destination)
+    try:
+        download_file(publisher_name, extension_name, last_version, destination)
+    except Exception as e:
+        print(f"Error: {e}")
+        # 删除下载的文件
+        Path(f"{destination}/{extension_name}-{last_version}.vsix").unlink()
 
 
 if __name__ == "__main__":
