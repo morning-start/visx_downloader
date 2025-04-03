@@ -33,8 +33,8 @@ pip install requests tqdm
 ### 使用可执行文件（exe）
 
 ```ps1
-visx_downloader.exe <ext_id> # 下载最新版本的扩展
-visx_downloader.exe -h # 显示帮助信息
+visx.exe <ext_id> # 下载最新版本的扩展
+visx.exe -h # 显示帮助信息
 ```
 
 ### 使用Python脚本
