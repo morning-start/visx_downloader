@@ -42,9 +42,9 @@ visx_downloader.exe -h # 显示帮助信息
 1. **克隆或下载代码仓库**：将本项目的代码下载到本地。
 2. **进入项目目录**：使用命令行进入项目所在的目录。
 
-```bash
-cd visx_downloader
-```
+    ```bash
+    cd visx_downloader
+    ```
 
 3. **同步环境（可选）**：如果项目有特定的环境同步需求，可以运行`uv sync`命令（根据实际情况可能不需要此步骤）。
 4. **下载扩展**：
@@ -61,7 +61,31 @@ python main.py -h # 显示帮助信息
 
 - `ext_id`（必需）：扩展的ID（例如`publisher.name`），这是VSCode扩展的唯一标识符。
 - `-v`或`--version`（可选）：扩展的特定版本。如果未指定，将下载最新版本。
-- `-d`或`--destination`（可选）：扩展将保存到的目标文件夹。默认值是当前目录（如果设置了环境变量`VSEXTP_DOWNLOAD_PATH`，则使用该环境变量的值，否则为`./extensions`）。
+- `-d`或`--destination`（可选）：扩展将保存到的目标文件夹。默认值会参考环境变量`VSEXTP_DOWNLOAD_PATH`。若设置了该环境变量，会使用其值作为默认保存路径；若未设置，则默认保存到`./extensions`目录。
+
+### 环境变量 `VSEXTP_DOWNLOAD_PATH` 说明
+
+`VSEXTP_DOWNLOAD_PATH` 是一个可选的环境变量，用于指定VSCode扩展文件的默认下载路径。当你在命令行中未使用 `-d` 或 `--destination` 参数指定目标文件夹时，脚本会检查该环境变量是否存在。如果存在，脚本会将扩展文件下载到该环境变量指定的路径；如果不存在，则会使用 `./extensions` 作为默认的下载路径。
+
+你可以通过以下方式设置环境变量：
+
+#### Windows
+
+在命令提示符或PowerShell中使用以下命令：
+
+```ps1
+$env:VSEXTP_DOWNLOAD_PATH = "C:\path\to\your\download\folder"
+```
+
+#### Linux 或 macOS
+
+在终端中使用以下命令：
+
+```bash
+export VSEXTP_DOWNLOAD_PATH="/path/to/your/download/folder"
+```
+
+若想让环境变量在每次启动系统时都自动设置，可以将上述命令添加到相应的配置文件中（如Windows的系统环境变量设置，Linux/macOS的 `.bashrc` 或 `.zshrc` 文件）。
 
 ## 示例
 
