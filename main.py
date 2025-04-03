@@ -1,7 +1,7 @@
 import argparse
 import json
 from pathlib import Path
-
+import os
 import requests
 from tqdm import tqdm
 
@@ -79,7 +79,7 @@ def run(ext_id: str, version: str = None, destination: str = "./extensions"):
         download_file(publisher_name, extension_name, last_version, destination)
     except Exception as e:
         print(f"Error: {e}")
-        # 删除下载的文件
+        # Delete downloaded file
         Path(f"{destination}/{extension_name}-{last_version}.vsix").unlink()
 
 
@@ -98,16 +98,19 @@ if __name__ == "__main__":
         help="Extension ID (e.g., publisher.name). This is the unique identifier of the VSCode extension.",
     )
     parser.add_argument(
+        "-v",  # 添加简写
         "--version",
         type=str,
         help="Specific version of the extension. If not specified, the latest version will be downloaded.",
         default=None,
     )
+    default_destination = os.getenv("VSEXTP_DOWNLOAD_PATH", "./extensions")
     parser.add_argument(
+        "-d",  # 添加简写
         "--destination",
         type=str,
         help="Destination folder where the extension will be saved. Default is the current directory.",
-        default="./extensions",
+        default=default_destination,
     )
 
     args = parser.parse_args()
