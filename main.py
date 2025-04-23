@@ -1,9 +1,17 @@
 import argparse
 import json
-from pathlib import Path
 import os
+from pathlib import Path
+from typing import NamedTuple
+
 import requests
 from tqdm import tqdm
+
+
+class ExtInfo(NamedTuple):
+    publisher_name: str
+    extension_name: str
+    last_version: str
 
 
 def format_size(size_bytes):
@@ -20,7 +28,7 @@ def get_file_name(headers: str):
     return headers.split("; ")[1].split("=")[1]
 
 
-def get_extension_info(ext_id: str) -> dict:
+def get_extension_info(ext_id: str) -> ExtInfo:
     url = "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery"
     payload = json.dumps(
         {
@@ -36,7 +44,12 @@ def get_extension_info(ext_id: str) -> dict:
         "Connection": "keep-alive",
     }
     response = requests.post(url, headers=headers, data=payload)
-    return response.json()["results"][0]["extensions"][0]
+    res = response.json()["results"][0]["extensions"][0]
+    return ExtInfo(
+        publisher_name=res["publisher"]["publisherName"],
+        extension_name=res["extensionName"],
+        last_version=res["versions"][0]["version"],
+    )
 
 
 def download_file(
@@ -50,7 +63,7 @@ def download_file(
         file_size = format_size(int(headers["Content-Length"]))
         if Path(f"{destination}/{file_name}").exists():
             print(f"{file_name} already exists. Skipping download.")
-            return
+            return True
         print(f"Downloading {file_name} ({file_size})...")
         with open(f"{destination}/{file_name}", "wb") as file:
             total_size = int(headers.get("Content-Length", 0))
@@ -60,23 +73,43 @@ def download_file(
                 for chunk in response.iter_content(chunk_size=8192):
                     file.write(chunk)
                     bar.update(len(chunk))
+        return True
     else:
         print(f"Failed to download file. Status code: {response.status_code}")
+        return False
 
 
-def run(ext_id: str, version: str = None, destination: str = "./extensions"):
+def delete_old_extensions(ext_id: str, last_version: str, destination: str):
+    pattern = f"{ext_id}-*.vsix"
+    for file in Path(destination).glob(pattern):
+        if file.name != f"{ext_id}-{last_version}.vsix":
+            file.unlink()
+            print(f"Deleted old extension: {file.name}")
+
+
+def run(
+    ext_id: str,
+    version: str = None,
+    destination: str = "./extensions",
+    keep_old: bool = False,
+):
     Path(destination).mkdir(parents=True, exist_ok=True)
     if version is None:
-        res = get_extension_info(ext_id)
-        last_version = res["versions"][0]["version"]
-        publisher_name = res["publisher"]["publisherName"]
-        extension_name = res["extensionName"]
+        print("Getting the latest version...")
+        ext_info = get_extension_info(ext_id)
+        publisher_name = ext_info.publisher_name
+        extension_name = ext_info.extension_name
+        last_version = ext_info.last_version
     else:
-        publisher_name = ext_id.split(".")[0]
-        extension_name = ext_id.split(".")[1]
+        publisher_name, extension_name = ext_id.split(".")
         last_version = version
     try:
-        download_file(publisher_name, extension_name, last_version, destination)
+        download_success = download_file(
+            publisher_name, extension_name, last_version, destination
+        )
+        if not keep_old and download_success:
+            print("Deleting old extensions...")
+            delete_old_extensions(ext_id, last_version, destination)
     except Exception as e:
         print(f"Error: {e}")
         # Delete downloaded file
@@ -84,6 +117,7 @@ def run(ext_id: str, version: str = None, destination: str = "./extensions"):
 
 
 if __name__ == "__main__":
+    default_destination = os.getenv("VSEXTP_DOWNLOAD_PATH", "./extensions")
     parser = argparse.ArgumentParser(
         description="Download VSCode extension.",
         epilog="Example:\n"
@@ -104,7 +138,6 @@ if __name__ == "__main__":
         help="Specific version of the extension. If not specified, the latest version will be downloaded.",
         default=None,
     )
-    default_destination = os.getenv("VSEXTP_DOWNLOAD_PATH", "./extensions")
     parser.add_argument(
         "-d",  # 添加简写
         "--destination",
@@ -112,6 +145,13 @@ if __name__ == "__main__":
         help="Destination folder where the extension will be saved. Default is the current directory.",
         default=default_destination,
     )
+    parser.add_argument(
+        "-k",  # 添加简写
+        "--keep_old",
+        action="store_true",
+        help="是否保存旧插件，默认不保存。如果不保存则删除该 id 开头的旧插件。",
+        default=False,
+    )
 
     args = parser.parse_args()
-    run(args.ext_id, args.version, args.destination)
+    run(args.ext_id, args.version, args.destination, args.keep_old)
