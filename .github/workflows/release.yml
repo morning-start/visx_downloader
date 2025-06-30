@@ -33,5 +33,4 @@ jobs:
     - name: Create Release
       uses: ncipollo/release-action@v1.18.0
       with:
-          artifacts: dist
-          
+          artifacts: ./dist/*
