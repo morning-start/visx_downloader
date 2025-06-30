@@ -42,7 +42,7 @@ cmd = [
     "--onefile",
     f"--version-file=version_file.txt",
     f"--icon={ICON}",
-    f"--name={APP_NAME}-win-{VERSION[:-2]}",
+    f"--name={APP_NAME}",
     "main.py",  # 假设主程序文件名为 main.py，可按需修改
 ]
 
