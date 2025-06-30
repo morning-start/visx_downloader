@@ -30,7 +30,7 @@ def write_version_file(version, author, app_name):
 
 
 AUTHOR = "MorningStart"
-VERSION = "2.2.0.0"
+VERSION = "3.0.0.0"
 APP_NAME = "visx"
 ICON = "icon.ico"
 

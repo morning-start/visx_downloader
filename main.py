@@ -135,7 +135,7 @@ def main(
         help="Specific version of the extension. If not specified, the latest version will be downloaded.",
     ),
     destination: str = typer.Option(
-        os.getenv("VSEXTP_DOWNLOAD_PATH", "./extensions"),
+        os.getenv("VISX_EXTENSIONS", "./extensions"),
         "-d",
         "--destination",
         help="Destination folder where the extension will be saved. Default is the current directory.",
