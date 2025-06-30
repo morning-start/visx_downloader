@@ -8,6 +8,9 @@ on:
 jobs:
   release-on-win:
     name: Release on Windows
+    permissions:  # 添加权限设置
+      contents: write  # 允许读写仓库内容
+      
     runs-on: windows-latest
     env:
       PYTHONIOENCODING: utf-8  # 强制 Python 使用 UTF-8 编码
