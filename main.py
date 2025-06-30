@@ -1,10 +1,10 @@
-import argparse
 import json
 import os
 from pathlib import Path
 from typing import NamedTuple
 
 import requests
+import typer
 from tqdm import tqdm
 
 
@@ -87,6 +87,9 @@ def delete_old_extensions(ext_id: str, last_version: str, destination: str):
             print(f"Deleted old extension: {file.name}")
 
 
+app = typer.Typer()
+
+
 def run(
     ext_id: str,
     version: str = None,
@@ -116,42 +119,36 @@ def run(
         Path(f"{destination}/{extension_name}-{last_version}.vsix").unlink()
 
 
-if __name__ == "__main__":
-    default_destination = os.getenv("VSEXTP_DOWNLOAD_PATH", "./extensions")
-    parser = argparse.ArgumentParser(
-        description="Download VSCode extension.",
-        epilog="Example:\n"
-        "  python download_extension.py ms-python.python --version 2023.1.0 --destination ./extensions\n"
-        "\n"
-        "Note: If no version is specified, the latest version will be downloaded.",
-        formatter_class=argparse.RawTextHelpFormatter,
-    )
-    parser.add_argument(
-        "ext_id",
-        type=str,
+@app.command(
+    help="Download VSCode extension.",
+    epilog="Example:\n  python download_extension.py ms-python.python --version 2023.1.0 \n\nNote: If no version is specified, the latest version will be downloaded.",
+)
+def main(
+    ext_id: str = typer.Argument(
+        ...,
         help="Extension ID (e.g., publisher.name). This is the unique identifier of the VSCode extension.",
-    )
-    parser.add_argument(
-        "-v",  # 添加简写
+    ),
+    version: str = typer.Option(
+        None,
+        "-v",
         "--version",
-        type=str,
         help="Specific version of the extension. If not specified, the latest version will be downloaded.",
-        default=None,
-    )
-    parser.add_argument(
-        "-d",  # 添加简写
+    ),
+    destination: str = typer.Option(
+        os.getenv("VSEXTP_DOWNLOAD_PATH", "./extensions"),
+        "-d",
         "--destination",
-        type=str,
         help="Destination folder where the extension will be saved. Default is the current directory.",
-        default=default_destination,
-    )
-    parser.add_argument(
-        "-k",  # 添加简写
+    ),
+    keep_old: bool = typer.Option(
+        False,
+        "-k",
         "--keep_old",
-        action="store_true",
         help="是否保存旧插件，默认不保存。如果不保存则删除该 id 开头的旧插件。",
-        default=False,
-    )
+    ),
+):
+    run(ext_id, version, destination, keep_old)
 
-    args = parser.parse_args()
-    run(args.ext_id, args.version, args.destination, args.keep_old)
+
+if __name__ == "__main__":
+    app()
