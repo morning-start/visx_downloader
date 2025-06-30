@@ -1,0 +1,27 @@
+name: Release Python Package with UV
+
+on:
+  push:
+    tags:
+      - 'v*' # 当有以 v 开头的 tag 被推送到仓库时触发
+
+jobs:
+  release-on-win:
+    name: Release on Windows
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Install UV
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+
+        
+    - name: Sync dependencies with UV
+      run: uv sync
+      
+    - name: Build the project
+      run: uv run build.py
+      

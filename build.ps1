@@ -1,1 +1,0 @@
-pyinstaller --onefile --version-file=version_file.txt --name visx main.py
