@@ -30,10 +30,8 @@ jobs:
     - name: Build the project
       run: uv run build.py
 
-    - name: Release Upload
-      uses: d1ceward/release-upload-action@v4.1.0
+    - name: Create Release
+      uses: ncipollo/release-action@v1.18.0
       with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-            dist\visx.exe
-            dist\sha256.txt
+          artifacts: dist
+          
