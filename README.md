@@ -10,12 +10,13 @@
 2. **版本选择**：可以指定下载特定版本的扩展，如果不指定版本，则自动下载最新版本。
 3. **文件大小显示**：在下载过程中显示文件的大小，以KB或MB为单位。
 4. **进度条显示**：使用`tqdm`库显示下载进度条，让用户清楚了解下载状态。
+5. **删除旧插件**：新增功能，默认情况下会删除该扩展ID相关的旧插件文件。
 
 ## 安装与依赖
 
 1. **Python环境**：确保你已经安装了Python 3.x版本。
 2. **依赖库安装**：运行脚本前，需要安装以下依赖库：
-    - `argparse`：用于解析命令行参数。
+    - `typer`：用于解析命令行参数。
     - `json`：Python内置库，用于处理JSON数据。
     - `pathlib`：Python内置库，用于处理文件路径。
     - `os`：Python内置库，用于与操作系统交互。
@@ -25,7 +26,7 @@
 你可以使用以下命令安装依赖库：
 
 ```bash
-pip install requests tqdm
+uv sync
 ```
 
 ## 使用方法
@@ -50,9 +51,9 @@ visx.exe -h # 显示帮助信息
 4. **下载扩展**：
 
 ```bash
-python main.py <ext_id> # 下载最新版本的扩展
-python main.py <ext_id> --version <version_number> --destination <target_folder> # 下载指定版本的扩展到指定文件夹
-python main.py -h # 显示帮助信息
+uv run main.py <ext_id> # 下载最新版本的扩展
+uv run main.py <ext_id> --version <version_number> --destination <target_folder> # 下载指定版本的扩展到指定文件夹
+uv run main.py -h # 显示帮助信息
 ```
 
 其中，`<ext_id>`是VSCode扩展的唯一标识符，格式为`publisher.name`（例如`ms-python.python`）；`<version_number>`是你想要下载的特定版本号；`<target_folder>`是保存扩展文件的目标文件夹路径。
@@ -77,20 +78,10 @@ python main.py -h # 显示帮助信息
 $env:VSEXTP_DOWNLOAD_PATH = "C:\path\to\your\download\folder"
 ```
 
-#### Linux 或 macOS
-
-在终端中使用以下命令：
-
-```bash
-export VSEXTP_DOWNLOAD_PATH="/path/to/your/download/folder"
-```
-
-若想让环境变量在每次启动系统时都自动设置，可以将上述命令添加到相应的配置文件中（如Windows的系统环境变量设置，Linux/macOS的 `.bashrc` 或 `.zshrc` 文件）。
-
 ## 示例
 
 ```bash
-python main.py ms-python.python --version 2023.1.0 --destination ./my_extensions
+uv run main.py ms-python.python --version 2023.1.0 --destination ./my_extensions
 ```
 
 上述命令将下载`ms-python.python`扩展的`2023.1.0`版本，并将其保存到`./my_extensions`文件夹中。
