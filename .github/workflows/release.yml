@@ -36,3 +36,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             dist\visx.exe
+            dist\sha256.txt

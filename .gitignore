@@ -196,3 +196,4 @@ cython_debug/
 
 # Built Visual Studio Code Extensions
 *.vsix
+version_file.txt

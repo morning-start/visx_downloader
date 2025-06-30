@@ -2,6 +2,33 @@ import subprocess
 from pathlib import Path
 
 
+# 生成sha256
+def sha256(file_path):
+    import hashlib
+
+    sha256 = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        while True:
+            data = f.read(4096)
+            if not data:
+                break
+            sha256.update(data)
+    return sha256.hexdigest()
+
+
+def md5(file_path):
+    import hashlib
+
+    md5 = hashlib.md5()
+    with open(file_path, "rb") as f:
+        while True:
+            data = f.read(4096)
+            if not data:
+                break
+            md5.update(data)
+    return md5.hexdigest()
+
+
 def write_version_file(version, author, app_name):
     """
     根据模板配置写入 version_file.txt
@@ -30,7 +57,7 @@ def write_version_file(version, author, app_name):
 
 
 AUTHOR = "MorningStart"
-VERSION = "2.1.0.0"
+VERSION = "2.2.0.0"
 APP_NAME = "visx"
 ICON = "icon.ico"
 
@@ -49,6 +76,8 @@ cmd = [
 try:
     # 执行 pyinstaller 命令
     subprocess.run(cmd, check=True)
+    Path("./dist/sha256.txt").write_text(sha256("./dist/visx.exe"), encoding="utf-8")
+    Path("./dist/md5.txt").write_text(md5("./dist/visx.exe"), encoding="utf-8")
     print("应用构建成功！")
 except subprocess.CalledProcessError as e:
     print(f"应用构建失败: {e}")
