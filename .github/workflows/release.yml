@@ -9,6 +9,8 @@ jobs:
   release-on-win:
     name: Release on Windows
     runs-on: windows-latest
+    env:
+      PYTHONIOENCODING: utf-8  # 强制 Python 使用 UTF-8 编码
     
     steps:
     - name: Checkout code
